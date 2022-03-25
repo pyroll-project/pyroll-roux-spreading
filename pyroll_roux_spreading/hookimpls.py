@@ -5,26 +5,21 @@ from pyroll import RollPass
 
 
 @RollPass.hookimpl
-def friction_coefficient(roll_pass):
-    return 0.35
-
-
-@RollPass.hookimpl
-def marini_parameter_a(roll_pass):
+def roux_parameter_c1(roll_pass):
     in_equivalent_height = roll_pass.in_profile.equivalent_rectangle.height
     out_equivalent_height = roll_pass.ideal_out_profile.equivalent_rectangle.height
     equivalent_height_change = in_equivalent_height - out_equivalent_height
 
-    return np.sqrt(equivalent_height_change) / (2 * roll_pass.friction_coefficient * roll_pass.roll_radius)
+    return (1 + 5 * (0.35 - equivalent_height_change / in_equivalent_height) ** 2) * np.sqrt(
+        in_equivalent_height / equivalent_height_change - 1)
 
 
 @RollPass.hookimpl
-def marini_parameter_b(roll_pass):
+def roux_parameter_c2(roll_pass):
     in_equivalent_height = roll_pass.in_profile.equivalent_rectangle.height
-    out_equivalent_height = roll_pass.ideal_out_profile.equivalent_rectangle.height
-    equivalent_height_change = in_equivalent_height - out_equivalent_height
+    in_equivalent_width = roll_pass.in_profile.equivalent_rectangle.width
 
-    return np.sqrt(equivalent_height_change / roll_pass.roll_radius)
+    return (in_equivalent_width / in_equivalent_height - 1) * (in_equivalent_width / in_equivalent_width) ** (2 / 3)
 
 
 @RollPass.hookimpl
@@ -35,13 +30,10 @@ def width_change(roll_pass):
 
     in_equivalent_width = roll_pass.in_profile.equivalent_rectangle.width
 
-    out_equivalent_width = in_equivalent_width + \
-                           (2 * equivalent_height_change * in_equivalent_width * (roll_pass.roll_radius - in_equivalent_height / 2)
-                            * roll_pass.marini_parameter_b) / \
-                           (in_equivalent_height * in_equivalent_width + (in_equivalent_width * (in_equivalent_height + out_equivalent_height) / 2 *
-                                                                          (1 + roll_pass.marini_parameter_a) / (1 - roll_pass.marini_parameter_a)) *
-                            (0.91 * (in_equivalent_width + 3 * in_equivalent_height)) / (4 * in_equivalent_height) +
-                            2 * out_equivalent_height * roll_pass.roll_radius * roll_pass.marini_parameter_b)
+    out_equivalent_width = in_equivalent_width + (in_equivalent_height - out_equivalent_height) * 1 / (
+            (1 - equivalent_height_change / in_equivalent_height) + (3 * roll_pass.roux_parameter_c1) / (
+            2 * roll_pass.roll_radius / in_equivalent_height) ** (3 / 4)) * (in_equivalent_width / in_equivalent_height) / (
+        1 + 0.57 * roll_pass.roux_parameter_c2)
 
     out_profile_width = (out_equivalent_width * roll_pass.ideal_out_profile.height
                          / roll_pass.ideal_out_profile.equivalent_rectangle.height)

@@ -23,11 +23,11 @@
     \textcite{} proposed \autoref{eq:roux} for estimation of spreading in flat rolling.
     Where $h$ and $b$ are height and width of the workpiece with the indices 0 and 1 denoting the incoming respectively the outgoing profile.
     $C_1$ and $C_2$ are parameters introduced by Roux.
-    $R$ is the roll radius and $\mu$ is the friction coefficient.
+    $R$ is the roll radius.
 
 
     \begin{equation}
-        C_1 = \left( 1 + 5 \left( 0.35 - \frac{\Delta h}{h_0}\right)^2 \right) \sqrt{\frac{h_0}{\Delta h}} -1
+        C_1 = \left( 1 + 5 \left( 0.35 - \frac{\Delta h}{h_0}\right)^2 \right) \sqrt{\frac{h_0}{\Delta h} - 1}
         \label{eq:roux-parameter-c1}
     \end{equation}
 
@@ -37,7 +37,7 @@
     \end{equation}
 
     \begin{equation}
-        b_1 = b_0 + \left( h_0 - h_1 \right) \frac{1}{\left( 1 - \frac{\delta h}{h_0} \right) + \frac{3 C_1}{\left( 2 \frac{R}{h_0} \right)^{\frac{3}{4}}}} \frac{\frac{b_0}{h_0}}{1 + 0.57 C_2}
+        b_1 = b_0 + \left( h_0 - h_1 \right) \frac{1}{\left( 1 - \frac{\Delta h}{h_0} \right) + \frac{3 C_1}{\left( 2 \frac{R}{h_0} \right)^{\frac{3}{4}}}} \frac{\frac{b_0}{h_0}}{1 + 0.57 C_2}
         \label{eq:roux}
     \end{equation}
 
@@ -97,7 +97,7 @@
 
     Several additional hooks on \lstinline{RollPass} are defined, which are used in spread calculation, as listed in \autoref{tab:hookspecs}.
     Base implementations of them are provided, so it should work out of the box.
-    For \lstinline{marini_parameter_a} and \lstinline{marini_parameter_b} the equations~\ref{eq:roux-parameter-c1} and~\ref{eq:roux-parameter-c2} are implemented.
+    For \lstinline{roux_parameter_c1} and \lstinline{roux_parameter_c2} the equations~\ref{eq:roux-parameter-c1} and~\ref{eq:roux-parameter-c2} are implemented.
     Friction coefficient can be adjusted individually.
     Provide your own hook implementations or set attributes on the \lstinline{RollPass} instances to alter the spreading behavior.
 

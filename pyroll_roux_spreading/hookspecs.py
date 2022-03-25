@@ -4,17 +4,13 @@ from pyroll import RollPass
 
 
 @RollPass.hookspec
-def friction_coefficient(roll_pass):
-    """Gets the friction coefficient."""
-
-@RollPass.hookspec
-def marini_parameter_a(roll_pass):
-    """Gets the Marini spreading model parameter a."""
+def roux_parameter_c1(roll_pass):
+    """Gets the Roux spreading model parameter c1."""
 
 
 @RollPass.hookspec
-def marini_parameter_b(roll_pass):
-    """Gets the Marini spreading model parameter b."""
+def roux_parameter_c2(roll_pass):
+    """Gets the Roux spreading model parameter c2."""
 
 
 RollPass.plugin_manager.add_hookspecs(sys.modules[__name__])
