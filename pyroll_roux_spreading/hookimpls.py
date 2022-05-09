@@ -20,8 +20,8 @@ def roux_parameter_b(roll_pass: RollPass):
             roll_pass.in_profile.equivalent_rectangle.width / roll_pass.in_profile.equivalent_rectangle.width) ** (2 / 3)
 
 
-@RollPass.OutProfile.hookimpl
-def width(roll_pass: RollPass):
+@RollPass.hookimpl
+def spread(roll_pass: RollPass):
     log = logging.getLogger(__name__)
 
     first_factor = (roll_pass.in_profile.equivalent_rectangle.height - roll_pass.out_profile.equivalent_rectangle.height)
@@ -32,8 +32,8 @@ def width(roll_pass: RollPass):
     third_factor = (roll_pass.in_profile.equivalent_rectangle.width / roll_pass.in_profile.equivalent_rectangle.height) / (
             1 + 0.57 * roll_pass.roux_parameter_b)
 
-    out_width = roll_pass.in_profile.width + first_factor * second_factor * third_factor
+    spread = 1 + (first_factor * second_factor * third_factor) / roll_pass.in_profile.equivalent_rectangle.width
 
-    log.debug(f"Width after Marini spreading model: {out_width}.")
+    log.debug(f"Spread after Marini spreading model: {spread}.")
 
-    return out_width
+    return spread
