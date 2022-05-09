@@ -1,46 +1,39 @@
-import sys
-
+import logging
 import numpy as np
 from pyroll import RollPass
 
 
 @RollPass.hookimpl
-def roux_parameter_c1(roll_pass):
-    in_equivalent_height = roll_pass.in_profile.equivalent_rectangle.height
-    out_equivalent_height = roll_pass.ideal_out_profile.equivalent_rectangle.height
-    equivalent_height_change = in_equivalent_height - out_equivalent_height
-
-    return (1 + 5 * (0.35 - equivalent_height_change / in_equivalent_height) ** 2) * np.sqrt(
-        in_equivalent_height / equivalent_height_change - 1)
+def equivalent_height_change(roll_pass: RollPass):
+    return roll_pass.in_profile.equivalent_rectangle.height - roll_pass.out_profile.equivalent_rectangle.height
 
 
 @RollPass.hookimpl
-def roux_parameter_c2(roll_pass):
-    in_equivalent_height = roll_pass.in_profile.equivalent_rectangle.height
-    in_equivalent_width = roll_pass.in_profile.equivalent_rectangle.width
-
-    return (in_equivalent_width / in_equivalent_height - 1) * (in_equivalent_width / in_equivalent_width) ** (2 / 3)
+def roux_parameter_a(roll_pass: RollPass):
+    return (1 + 5 * (0.35 - roll_pass.equivalent_height_change / roll_pass.in_profile.equivalent_rectangle.height) ** 2) * np.sqrt(
+        roll_pass.in_profile.equivalent_rectangle.height / roll_pass.equivalent_height_change - 1)
 
 
 @RollPass.hookimpl
-def width_change(roll_pass):
-    in_equivalent_height = roll_pass.in_profile.equivalent_rectangle.height
-    out_equivalent_height = roll_pass.ideal_out_profile.equivalent_rectangle.height
-    equivalent_height_change = in_equivalent_height - out_equivalent_height
-
-    in_equivalent_width = roll_pass.in_profile.equivalent_rectangle.width
-
-    out_equivalent_width = in_equivalent_width + (in_equivalent_height - out_equivalent_height) * 1 / (
-            (1 - equivalent_height_change / in_equivalent_height) + (3 * roll_pass.roux_parameter_c1) / (
-            2 * roll_pass.roll_radius / in_equivalent_height) ** (3 / 4)) * (in_equivalent_width / in_equivalent_height) / (
-        1 + 0.57 * roll_pass.roux_parameter_c2)
-
-    out_profile_width = (out_equivalent_width * roll_pass.ideal_out_profile.height
-                         / roll_pass.ideal_out_profile.equivalent_rectangle.height)
-
-    width_change = out_profile_width - roll_pass.in_profile.rotated.width
-
-    return width_change
+def roux_parameter_b(roll_pass: RollPass):
+    return (roll_pass.in_profile.equivalent_rectangle.width / roll_pass.in_profile.equivalent_rectangle.height - 1) * (
+            roll_pass.in_profile.equivalent_rectangle.width / roll_pass.in_profile.equivalent_rectangle.width) ** (2 / 3)
 
 
-RollPass.plugin_manager.register(sys.modules[__name__])
+@RollPass.OutProfile.hookimpl
+def width(roll_pass: RollPass):
+    log = logging.getLogger(__name__)
+
+    first_factor = (roll_pass.in_profile.equivalent_rectangle.height - roll_pass.out_profile.equivalent_rectangle.height)
+
+    second_factor = 1 / ((1 - roll_pass.equivalent_height_change / roll_pass.in_profile.equivalent_rectangle.height) + (3 * roll_pass.roux_parameter_a) / (
+            (2 * roll_pass.roll.nominal_radius) / roll_pass.in_profile.equivalent_rectangle.height) ** (3 / 4))
+
+    third_factor = (roll_pass.in_profile.equivalent_rectangle.width / roll_pass.in_profile.equivalent_rectangle.height) / (
+            1 + 0.57 * roll_pass.roux_parameter_b)
+
+    out_width = roll_pass.in_profile.width + first_factor * second_factor * third_factor
+
+    log.debug(f"Width after Marini spreading model: {out_width}.")
+
+    return out_width

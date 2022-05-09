@@ -1,16 +1,16 @@
-import sys
-
 from pyroll import RollPass
 
 
 @RollPass.hookspec
-def roux_parameter_c1(roll_pass):
-    """Gets the Roux spreading model parameter c1."""
+def equivalent_height_change(roll_pass):
+    """Height change for equivalent rectangle of the roll pass"""
 
 
 @RollPass.hookspec
-def roux_parameter_c2(roll_pass):
-    """Gets the Roux spreading model parameter c2."""
+def roux_parameter_a(roll_pass):
+    """Gets the Roux spreading model parameter A."""
 
 
-RollPass.plugin_manager.add_hookspecs(sys.modules[__name__])
+@RollPass.hookspec
+def roux_parameter_b(roll_pass):
+    """Gets the Roux spreading model parameter B."""

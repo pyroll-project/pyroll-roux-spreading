@@ -1,33 +1,32 @@
+import logging
 from pathlib import Path
-from click.testing import CliRunner
 
 import pytest
 
+from pyroll import solve
+from pyroll.ui.reporter import Reporter
+
 THIS_DIR = Path(__file__).parent
-INPUT = (THIS_DIR.parent / "pyroll-core" / "pyroll" / "ui" / "cli" / "res" / "input_trio.py").read_text()
-CONFIG = (THIS_DIR / "config.yaml").read_text()
 
 
-def test_solve(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    from pyroll.ui.cli.program import main
+def test_solve(tmp_path: Path, caplog):
+    import pyroll.ui.cli.res.input_trio as input_py
+    import pyroll_roux_spreading
 
-    (tmp_path / "input.py").write_text(INPUT)
-    (tmp_path / "config.yaml").write_text(CONFIG)
+    caplog.set_level(logging.DEBUG, logger="pyroll_roux_spreading")
 
-    monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
-    result = runner.invoke(
-        main,
-        [
-            "input-py",
-            "solve",
-            "report",
-        ],
+    sequence = input_py.sequence
 
-    )
+    solve(sequence, input_py.in_profile)
 
-    print("\n")
-    print(result.stdout)
-    print(result.exception)
+    report = Reporter()
 
-    assert result.exit_code == 0
+    rendered = report.render(sequence)
+    print()
+
+    report_file = tmp_path / "report.html"
+    report_file.write_text(rendered)
+    print(report_file)
+
+    print("\nLog:")
+    print(caplog.text)
