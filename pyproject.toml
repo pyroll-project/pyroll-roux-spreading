@@ -11,8 +11,9 @@ homepage = "https://pyroll-project.github.io/"
 repository = "https://github.com/pyroll-project/pyroll-roux-spreading"
 documentation = "https://github.com/pyroll-project/pyroll-roux-spreading/blob/main/docs/docs.pdf"
 packages = [
-    { include = "pyroll/roux_spreading" }
+    { include = "roux_spreading", from = "pyroll" }
 ]
+
 
 
 [tool.poetry.dependencies]
