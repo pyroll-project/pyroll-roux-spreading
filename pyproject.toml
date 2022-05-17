@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "pyroll-marini-spreading"
-version = "0.1.0"
+name = "pyroll-roux-spreading"
+version = "1.0.0"
 description = "Plugin for PyRoll providing the Roux spreading model."
 authors = [
     "Christoph Renzing <christoph.renzing@imf.tu-freiberg.de>",
