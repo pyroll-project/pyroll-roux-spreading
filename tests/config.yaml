@@ -1,5 +1,5 @@
 plugins: # list full qualified names of plugins to load (as they were importable in real python code)
-  - pyroll_roux_spreading
+  - roux_spreading
 
 logging: # configuration for the logging standard library package
   version: 1
