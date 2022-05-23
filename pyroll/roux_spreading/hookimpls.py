@@ -27,7 +27,7 @@ def spread(roll_pass: RollPass):
     first_factor = (roll_pass.in_profile.equivalent_rectangle.height - roll_pass.out_profile.equivalent_rectangle.height)
 
     second_factor = 1 / ((1 - roll_pass.equivalent_height_change / roll_pass.in_profile.equivalent_rectangle.height) + (3 * roll_pass.roux_parameter_a) / (
-            (2 * roll_pass.roll.nominal_radius) / roll_pass.in_profile.equivalent_rectangle.height) ** (3 / 4))
+            (2 * roll_pass.roll.working_radius) / roll_pass.in_profile.equivalent_rectangle.height) ** (3 / 4))
 
     third_factor = (roll_pass.in_profile.equivalent_rectangle.width / roll_pass.in_profile.equivalent_rectangle.height) / (
             1 + 0.57 * roll_pass.roux_parameter_b)
