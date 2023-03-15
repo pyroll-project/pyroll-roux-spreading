@@ -16,6 +16,10 @@ RollPass.second_roux_parameter = Hook[float]()
 @RollPass.first_roux_parameter
 def first_roux_parameter(self: RollPass):
     equivalent_height_change = self.in_profile.equivalent_height - self.out_profile.equivalent_height
+
+    if np.isclose(equivalent_height_change, 0):
+        return 1
+
     return (1 + 5 * (
             0.35 - equivalent_height_change / self.in_profile.equivalent_height) ** 2) * np.sqrt(
         self.in_profile.equivalent_height / equivalent_height_change - 1)
