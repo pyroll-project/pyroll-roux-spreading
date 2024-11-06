@@ -11,7 +11,7 @@ root_hooks.add(Profile.equivalent_rectangle)
 
 
 def test_solve3(tmp_path: Path, caplog):
-    caplog.set_level(logging.DEBUG, logger="pyroll")
+    caplog.set_level(logging.INFO, logger="pyroll")
 
     in_profile = Profile.round(
         diameter=55e-3,
@@ -63,13 +63,16 @@ def test_solve3(tmp_path: Path, caplog):
         print("\nLog:")
         print(caplog.text)
 
+        assert sequence[0].first_roux_parameter > 0
+        assert sequence[2].first_roux_parameter > 0
+
     try:
         import pyroll.report
 
         report = pyroll.report.report(sequence)
 
         report_file = tmp_path / "report.html"
-        report_file.write_text(report)
+        report_file.write_text(report, encoding="utf-8")
         print(report_file)
         webbrowser.open(report_file.as_uri())
 
