@@ -2,7 +2,7 @@ import numpy as np
 from pyroll.core import BaseRollPass, root_hooks, Unit
 from pyroll.core.hooks import Hook
 
-VERSION = "3.0"
+VERSION = "3.0.0"
 
 root_hooks.add(Unit.OutProfile.width)
 
